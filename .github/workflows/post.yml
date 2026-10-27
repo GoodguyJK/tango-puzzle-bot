@@ -1,0 +1,31 @@
+name: Tango Puzzle Auto Post
+
+on:
+  schedule:
+    # 한국 시간 KST 기준 매일 12:15 (UTC 03:15), 22:30 (UTC 13:30)
+    - cron: '15 3 * * *'
+    - cron: '30 13 * * *'
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 파이썬 세팅
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 패키지 설치
+        run: |
+          pip install -r requirements.txt
+
+      - name: 스레드 자동 글 생성 및 게시 실행
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: |
+          python threads_bot.py
